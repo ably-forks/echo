@@ -63,6 +63,15 @@ Echo.join('channel3');
 Echo.leaveChannel("presence:channel3")
 ```
 
+## Additional supported features
+
+
+## Ack for whisper
+
+## Access the ably channel instance and name
+- Use channel name for leaving the channel.
+- Same channel name can be used to observe streaming messages on ably dev console. 
+
 ## Official Documentation
 - More documentation for Echo can be found on the [Laravel website](https://laravel.com/docs/broadcasting).
 
