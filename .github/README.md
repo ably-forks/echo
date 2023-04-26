@@ -49,18 +49,45 @@ Once you have uncommented and adjusted the Echo configuration according to your 
 npm run dev
 ```
 
-## Leaving the channel
-- Make sure to use following syntax while using `leaveChannel` method on `Echo`.
+##  Observing channel messages on ably dev-console and Leaving the channel
+- You can get the internal channel name using
 ```
- // public channel
-Echo.channel('channel1');
-Echo.leaveChannel("public:channel1");
+//public channel
+let echoPublicChannel = Echo.channel('channel1');
+let ablyPublicChannelName = echoPublicChannel.name;
+console.log(ablyPublicChannelName); // public:channel1
+
 // private channel
-Echo.private('channel2'); 
-Echo.leaveChannel("private:channel2")
+let echoPrivateChannel = Echo.private('channel2');
+let ablyPrivateChannelName = echoPrivateChannel.name;
+console.log(ablyPrivateChannelName); // private:channel2
+
 // presence channel
-Echo.join('channel3'); 
-Echo.leaveChannel("presence:channel3")
+let echoPresenceChannel = Echo.join('channel3');
+let ablyPresenceChannelName = echoPresenceChannel.name;
+console.log(ablyPresenceChannelName); // presence:channel3
+```
+- Use the same channel name for [observing channel messages on ably dev console](https://ably.com/docs/tools#developer-console).
+- Use the same channel name for leaving the channel
+```
+Echo.leaveChannel(echoPublicChannel.name);
+Echo.leaveChannel(echoPrivateChannel.name);
+Echo.leaveChannel(echoPresenceChannel.name);
+```
+
+## Success/failure confirmation for whisper
+- You can get acknowledgement for a whisper/client-event sent on a private/presence channel by passing an extra callback argument.
+- Extra callback is a function that receives `err` object representing success/failure.
+```
+        echoPrivateChannel.subscribed(() => {
+                echoPrivateChannel.whisper('msg', 'Hello there jonny!', (err) => {
+                    if(err) {
+                        console.log('whisper failed with error ' + err);
+                    } else {
+                        console.log('whisper succeeded');
+                    }
+                });
+            });
 ```
 
 ## Official Documentation
