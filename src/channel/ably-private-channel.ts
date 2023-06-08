@@ -8,7 +8,7 @@ export class AblyPrivateChannel extends AblyChannel {
         this.subscribe();
     }
     /**
-     * Trigger client event on the channel.
+     * Send a whisper event to other clients in the channel.
      */
     whisper(eventName: string, data: any, callback?: Function): AblyPrivateChannel {
         if (callback) {
