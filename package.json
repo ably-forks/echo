@@ -17,7 +17,7 @@
     },
     "main": "dist/echo.common.js",
     "module": "dist/echo.js",
-    "types": "dist/echo.d.ts",
+    "types": "dist/src/echo.d.ts",
     "scripts": {
         "build": "npm run compile && npm run declarations",
         "compile": "rollup -c",
