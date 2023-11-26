@@ -90,6 +90,20 @@ Echo.leaveChannel(echoPresenceChannel.name);
             });
 ```
 
+## Working with laravel sanctum
+- There is an explicit section for [Authorizing Private Broadcast Channels](https://laravel.com/docs/sanctum#authorizing-private-broadcast-channels).
+- Equivalent of this is to provide `requestTokenFn` as an argument while creating an Echo instance
+```js
+    echo = new Echo({
+            broadcaster: 'ably',
+            useTls: true,
+            requestTokenFn: async (channelName: string, existingToken: string) => {
+                let postData = { channel_name: channelName, token: existingToken };
+                return await axios.post("/api/broadcasting/auth", postData);
+            },
+    });
+```
+
 ## Official Documentation
 - More documentation for Echo can be found on the [Laravel website](https://laravel.com/docs/broadcasting).
 
