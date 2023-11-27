@@ -99,10 +99,12 @@ Echo.leaveChannel(echoPresenceChannel.name);
             useTls: true,
             requestTokenFn: async (channelName: string, existingToken: string) => {
                 let postData = { channel_name: channelName, token: existingToken };
-                return await axios.post("/api/broadcasting/auth", postData);
+                const res = await axios.post("/api/broadcasting/auth", postData);
+                return res.data;
             },
     });
 ```
+- Note: Do not add try/catch statement for above code, since exceptions are being handled internally.
 
 ## Official Documentation
 - More documentation for Echo can be found on the [Laravel website](https://laravel.com/docs/broadcasting).
