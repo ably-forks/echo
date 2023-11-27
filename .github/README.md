@@ -33,21 +33,39 @@ window.Echo.connector.ably.connection.on(stateChange => {
     authEndpoint: '/broadcasting/auth' // relative or absolute url to laravel-server
 ```
 
-- You can set additional ably-js [clientOptions](https://ably.com/docs/api/realtime-sdk?lang=javascript#client-options) when creating an `Echo` instance.
-- [Auth specific clientOptions](https://sdk.ably.com/builds/ably/specification/main/features/#AO1) should not be used, since laravel `authEndpoint` is already responsible for token authentication and external auth mechanism is not needed.
+- You can set additional ably-js [js-clientOptions](https://ably.com/docs/api/realtime-sdk?lang=javascript#client-options) when creating an `Echo` instance. Some of those are =>
 
 ```
     broadcaster: 'ably',
+    // ably specific client-options
     echoMessages: true, // self-echo for published message is set to false internally.
     queueMessages: true, // default: true, maintains queue for messages to be sent.
-    disconnectedRetryTimeout: 15000, // Retry connect after 15 seconds when client gets disconnected
+    disconnectedRetryTimeout: 15000, // reconnect after 15 seconds when client goes disconnected state
+    suspendedRetryTimeout: 30000, // reconnect after 30 seconds when client goes suspended state
 ```
+- [Auth specific clientOptions](https://sdk.ably.com/builds/ably/specification/main/features/#AO1) should not be used, since laravel `authEndpoint` is already responsible for token authentication and external auth mechanism is not needed.
 
 Once you have uncommented and adjusted the Echo configuration according to your needs, you may compile your application's assets:
 
 ```shell
 npm run dev
 ```
+
+## Working with laravel sanctum/ support channel auth using custom implementation
+- There is an explicit section for [Authorizing Private/Presence Broadcast Channels](https://laravel.com/docs/sanctum#authorizing-private-broadcast-channels).
+- Equivalent of this is to provide `requestTokenFn` as an argument while creating an Echo instance
+```js
+    echo = new Echo({
+            broadcaster: 'ably',
+            useTls: true,
+            requestTokenFn: async (channelName: string, existingToken: string) => {
+                let postData = { channel_name: channelName, token: existingToken };
+                const res = await axios.post("/api/broadcasting/auth", postData);
+                return res.data;
+            },
+    });
+```
+- Note: Do not add try/catch statement for above code, since exceptions are being handled internally.
 
 ##  Observing channel messages on ably dev-console and Leaving the channel
 - You can get the internal channel name using
@@ -89,22 +107,6 @@ Echo.leaveChannel(echoPresenceChannel.name);
                 });
             });
 ```
-
-## Working with laravel sanctum
-- There is an explicit section for [Authorizing Private Broadcast Channels](https://laravel.com/docs/sanctum#authorizing-private-broadcast-channels).
-- Equivalent of this is to provide `requestTokenFn` as an argument while creating an Echo instance
-```js
-    echo = new Echo({
-            broadcaster: 'ably',
-            useTls: true,
-            requestTokenFn: async (channelName: string, existingToken: string) => {
-                let postData = { channel_name: channelName, token: existingToken };
-                const res = await axios.post("/api/broadcasting/auth", postData);
-                return res.data;
-            },
-    });
-```
-- Note: Do not add try/catch statement for above code, since exceptions are being handled internally.
 
 ## Official Documentation
 - More documentation for Echo can be found on the [Laravel website](https://laravel.com/docs/broadcasting).
