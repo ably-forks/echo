@@ -24,7 +24,7 @@ export const beforeChannelAttach = (ablyClient, authorize: Function) => {
 
         authorize(this, (error) => {
             this.authorizing = false;
-            if (error) {
+            if (error && errCallback) {
                 errCallback(error);
                 return;
             } else {
