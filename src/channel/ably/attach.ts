@@ -28,7 +28,7 @@ export const beforeChannelAttach = (ablyClient, authorize: Function) => {
                 if (errCallback) {
                     errCallback(error);
                 } else {
-                    console.error(`Received error while authorizing channel ${error}`)
+                    console.error(`channel ${this.name} auth error => ${error}`)
                 }
                 return;
             } else {
