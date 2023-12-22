@@ -24,8 +24,12 @@ export const beforeChannelAttach = (ablyClient, authorize: Function) => {
 
         authorize(this, (error) => {
             this.authorizing = false;
-            if (error && errCallback) {
-                errCallback(error);
+            if (error) {
+                if (errCallback) {
+                    errCallback(error);
+                } else {
+                    console.error(`channel ${this.name} auth error => ${error}`)
+                }
                 return;
             } else {
                 bindedInternalAttach(forceReattach, attachReason, errCallback);
