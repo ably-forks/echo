@@ -44,7 +44,7 @@
         "@types/node": "^18.11.9",
         "@typescript-eslint/eslint-plugin": "^5.14.0",
         "@typescript-eslint/parser": "^5.14.0",
-        "ably": "^1.2.20",
+        "ably": "^1.2",
         "eslint": "^8.11.0",
         "jest": "^27.5.1",
         "jsonwebtoken": "^8.5.1",
@@ -60,5 +60,8 @@
     },
     "engines": {
         "node": ">=10"
+    },
+    "peerDependencies": {
+        "ably": "^1.2"
     }
 }
