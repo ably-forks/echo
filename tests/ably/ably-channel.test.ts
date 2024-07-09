@@ -194,6 +194,7 @@ describe('AblyChannel', () => {
     });
 
     test('Leave channel', async () => {
+        mockAuthServer.clientId = 'sacOO7@github.com'
         const publicChannel = echo.channel('test') as AblyChannel;
         const privateChannel = echo.private('test') as AblyChannel;
         const presenceChannel = echo.join('test') as AblyPresenceChannel;

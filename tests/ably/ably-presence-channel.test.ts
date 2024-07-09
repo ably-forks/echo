@@ -15,6 +15,7 @@ describe('AblyPresenceChannel', () => {
         global.Ably = Ably;
         testApp = await setup();
         mockAuthServer = new MockAuthServer(testApp.keys[0].keyStr);
+        mockAuthServer.clientId = 'sacOO7@github.com'
     });
 
     afterAll(async () => {
