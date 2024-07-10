@@ -63,7 +63,7 @@ export class AblyAuth {
 
     ablyClient = () => this.ablyConnector.ably as AblyRealtime | any;
 
-    existingToken = () => this.ablyClient().auth.tokenDetails;
+    existingToken = () => this.ablyClient().auth.tokenDetails as TokenDetails;
 
     getChannel = name => this.ablyConnector.channels[name];
 
@@ -114,11 +114,15 @@ export class AblyAuth {
     };
 
     allowReconnectOnUserLogin = () => {
-        this.ablyClient().connection.on('failed', stateChange => {
-            if (stateChange.reason.code == 40102) {
+        const ablyConnection = this.ablyClient().connection
+
+        const connectionFailedCallback = stateChange => {
+            if (stateChange.reason.code == 40102) { // 40102 denotes mismatched clientId
+                ablyConnection.off(connectionFailedCallback);
                 this.onClientIdChanged();
             }
-        });
+        }
+        ablyConnection.on('failed', connectionFailedCallback);
     }
 
     /**
