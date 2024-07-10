@@ -113,6 +113,28 @@ export class AblyAuth {
         });
     };
 
+    allowReconnectOnUserLogin = () => {
+        this.ablyClient().connection.on('failed', stateChange => {
+            if (stateChange.reason.code == 40102) {
+                this.onClientIdChanged();
+            }
+        });
+    }
+
+    /**
+     * This will be called when (guest)user logs in and new clientId is returned in the jwt token.
+     * If client tries to authenticate with new clientId on same connection, ably server returns
+     * error and connection goes into failed state.
+     * See https://github.com/ably/laravel-broadcaster/issues/45 for more details.
+     * There's a separate test case added for user login flow => ably-user-login.test.ts.
+     */
+    onClientIdChanged = () => {
+        this.ablyClient().connect();
+        for (const ablyChannel of Object.values(this.ablyConnector.channels)) {
+            ablyChannel.channel.attach(ablyChannel._alertErrorListeners);
+        }
+    }
+
     tryAuthorizeOnSameConnection = (authOptions?: AuthOptions, callback?: (error, TokenDetails) => void) => {
         this.ablyClient().auth.authorize(null, authOptions, callback)
     }

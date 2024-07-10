@@ -42,21 +42,8 @@ export class AblyConnector extends Connector {
             this.options.agents['laravel-echo'] = AblyConnector.LIB_VERSION;
             this.ably = new Ably.Realtime({ ...this.ablyAuth.options, ...this.options });
             this.ablyAuth.enableAuthorizeBeforeChannelAttach();
+            this.ablyAuth.allowReconnectOnUserLogin()
         }
-    }
-
-    /**
-     * This will be called when (guest)user logs in and new clientId is returned in the jwt token.
-     * If client tries to authenticate with new clientId on same connection, ably server returns
-     * error and connection goes into failed state. To avoid this, it's better to disconnect from
-     * existing connection and reconnect using token with new clinetId.
-     * See https://github.com/ably/laravel-broadcaster/issues/45 for more details.
-     * There's a separate test case added for user login flow => ably-user-login.test.ts.
-     */
-    private onClientIdChanged(newToken: TokenDetails) {
-        this.disconnect()
-        this.options['token'] = newToken;
-        this.connect()
     }
 
     /**
