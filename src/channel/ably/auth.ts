@@ -131,7 +131,10 @@ export class AblyAuth {
     onClientIdChanged = () => {
         this.ablyClient().connect();
         for (const ablyChannel of Object.values(this.ablyConnector.channels)) {
-            ablyChannel.channel.attach(ablyChannel._alertErrorListeners);
+            // Only attach public channels
+            if (ablyChannel instanceof AblyChannel) {
+                ablyChannel.channel.attach(ablyChannel._alertErrorListeners);
+            }
         }
     }
 
