@@ -4,12 +4,13 @@ import { SequentialAuthTokenRequestExecuter } from './token-request';
 import { AblyChannel } from '../ably-channel';
 import { AblyConnector } from '../../connector/ably-connector';
 import { AblyPresenceChannel } from '../ably-presence-channel';
-import { AuthOptions, ChannelStateChange, ClientOptions } from '../../../typings/ably';
+import { AblyRealtime, AuthOptions, ChannelStateChange, ClientOptions, TokenDetails } from '../../../typings/ably';
 
 export class AblyAuth {
     authEndpoint: string;
     authHeaders: any;
     authRequestExecuter: SequentialAuthTokenRequestExecuter;
+    ablyConnector: AblyConnector;
 
     expiredAuthChannels = new Set<string>();
     setExpired = (channelName: string) => this.expiredAuthChannels.add(channelName);
@@ -47,7 +48,8 @@ export class AblyAuth {
         return await httpRequestAsync(postOptions);
     };
 
-    constructor(options) {
+    constructor(ablyConnector: AblyConnector, options) {
+        this.ablyConnector = ablyConnector;
         const {
             authEndpoint,
             auth: { headers },
@@ -59,8 +61,14 @@ export class AblyAuth {
         this.authRequestExecuter = new SequentialAuthTokenRequestExecuter(token, requestTokenFn ?? this.requestToken);
     }
 
-    enableAuthorizeBeforeChannelAttach = (ablyConnector: AblyConnector) => {
-        const ablyClient: any = ablyConnector.ably;
+    ablyClient = () => this.ablyConnector.ably as AblyRealtime | any;
+
+    existingToken = () => this.ablyClient().auth.tokenDetails;
+
+    getChannel = name => this.ablyConnector.channels[name];
+
+    enableAuthorizeBeforeChannelAttach = () => {
+        const ablyClient = this.ablyClient()
         ablyClient.auth.getTimestamp(this.options.queryTime, () => void 0); // generates serverTimeOffset in the background
 
         beforeChannelAttach(ablyClient, (realtimeChannel, errorCallback) => {
@@ -71,7 +79,7 @@ export class AblyAuth {
             }
 
             // Use cached token if has channel capability and is not expired
-            const tokenDetails = ablyClient.auth.tokenDetails;
+            const tokenDetails = this.existingToken();
             if (tokenDetails && !this.isExpired(channelName)) {
                 const capability = parseJwt(tokenDetails.token).payload['x-ably-capability'];
                 const tokenHasChannelCapability = capability.includes(`${channelName}"`);
@@ -87,10 +95,9 @@ export class AblyAuth {
                 .request(channelName)
                 .then(({ token: jwtToken, info }) => {
                     // get upgraded token with channel access
-                    const echoChannel = ablyConnector.channels[channelName];
+                    const echoChannel = this.getChannel(channelName);
                     this.setPresenceInfo(echoChannel, info);
-                    ablyClient.auth.authorize(
-                        null,
+                    this.tryAuthorizeOnSameConnection(
                         { ...this.options, token: toTokenDetails(jwtToken) },
                         (err, _tokenDetails) => {
                             if (err) {
@@ -105,6 +112,10 @@ export class AblyAuth {
                 .catch((err) => errorCallback(err));
         });
     };
+
+    tryAuthorizeOnSameConnection = (authOptions?: AuthOptions, callback?: (error, TokenDetails) => void) => {
+        this.ablyClient().auth.authorize(null, authOptions, callback)
+    }
 
     onChannelFailed = (echoAblyChannel: AblyChannel) => (stateChange: ChannelStateChange) => {
         // channel capability rejected https://help.ably.io/error/40160
@@ -123,8 +134,7 @@ export class AblyAuth {
             .request(channelName)
             .then(({ token: jwtToken, info }) => {
                 this.setPresenceInfo(echoAblyChannel, info);
-                echoAblyChannel.ably.auth.authorize(
-                    null,
+                this.tryAuthorizeOnSameConnection(
                     { ...this.options, token: toTokenDetails(jwtToken) as any },
                     (err, _tokenDetails) => {
                         if (err) {
