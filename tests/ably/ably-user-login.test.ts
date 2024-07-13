@@ -61,15 +61,19 @@ describe('AblyUserLogin', () => {
         const privateChannel = echo.private('test') as AblyPrivateChannel; // Requests new token        
         await new Promise((resolve) => privateChannel.subscribed(resolve));
 
+        // Connection goes into failed state and then reconnects again
         await waitForExpect(() => {
             expect(connectionStates).toStrictEqual(['failed', 'connecting', 'connected'])
-        });        
-        jest.clearAllMocks();
+        });
+        expect(privateChannel.channel.state).toBe('attached');
+
+        expect(echo.connector.ablyAuth.existingToken().clientId).toBe('sacOO7@github.com');
     });
 
     test('user logs in with previous (guest) channels', async () => {
         let connectionStates : Array<any>= []
         let publicChannelStates : Array<any>= []
+
         // Initial clientId is null
         expect(mockAuthServer.clientId).toBeNull();
         await waitForExpect(() => {
@@ -81,6 +85,7 @@ describe('AblyUserLogin', () => {
             connectionStates.push(stateChange.current)
         })
 
+        // Subscribe to a public channel as a guest user
         const publicChannel = echo.channel('test1') as AblyChannel;
         await new Promise((resolve) => publicChannel.subscribed(resolve));
         publicChannel.channel.on(stateChange => {
@@ -104,6 +109,7 @@ describe('AblyUserLogin', () => {
             expect(echo.connector.ably.connection.state).toBe('connected')
         });
 
+        // Attaches both public and private channel
         await Promise.all([ 
             new Promise(resolve => publicChannel.subscribed(resolve)),
             new Promise(resolve => privateChannel.subscribed(resolve))
@@ -115,19 +121,19 @@ describe('AblyUserLogin', () => {
         await waitForExpect(() => {
             expect(publicChannelStates).toStrictEqual(['failed', 'attaching', 'attached']);
         });
-        expect(privateChannel.channel.state).toBe('attached')
+        expect(privateChannel.channel.state).toBe('attached');
 
         expect(echo.connector.ablyAuth.existingToken().clientId).toBe('sacOO7@github.com');
-        jest.clearAllMocks();
     });
 
     test('user logs in and then logs out', async() => {
         let connectionStates : Array<any>= []
         let privateChannelStates : Array<any>= []
+
         // Initial clientId is null
         expect(mockAuthServer.clientId).toBeNull();
         await waitForExpect(() => {
-            expect(echo.connector.ably.connection.state).toBe('connected')
+            expect(echo.connector.ably.connection.state).toBe('connected');
         });
 
         // Track all connection state changes
@@ -167,11 +173,12 @@ describe('AblyUserLogin', () => {
         await waitForExpect(() => {
             expect(privateChannelStates).toStrictEqual(['attaching', 'attached', 'failed']);
         });
+
         // Connection transitions to failed state
         await waitForExpect(() => {
             expect(connectionStates).toStrictEqual(['failed', 'connecting', 'connected', 'failed'])
         });
 
-        jest.clearAllMocks();
+        expect(echo.connector.ablyAuth.existingToken().clientId).toBeNull();
     });
 });
