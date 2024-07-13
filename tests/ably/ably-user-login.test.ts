@@ -93,8 +93,21 @@ describe('AblyUserLogin', () => {
 
         // Set server clientId to sacOO7@github.com, user logs in for next request
         mockAuthServer.clientId = 'sacOO7@github.com';
-        const privateChannel = echo.private('test') as AblyPrivateChannel; // Requests new token
-        await new Promise((resolve) => privateChannel.subscribed(resolve));
+        const privateChannel = echo.private('test') as AblyPrivateChannel; // requests new token for channel `test`
+
+        // Since new clientId is returned in the new token, ably returns mismatched error for given auth request
+        const privateChannelErr : Error = await new Promise(resolve => privateChannel.error(resolve));
+        expect(privateChannelErr.message).toContain('Mismatched clientId for existing connection');
+
+        // Reconnects again and starts explicit attach for all channels
+        await waitForExpect(() => {
+            expect(echo.connector.ably.connection.state).toBe('connected')
+        });
+
+        await Promise.all([ 
+            new Promise(resolve => publicChannel.subscribed(resolve)),
+            new Promise(resolve => privateChannel.subscribed(resolve))
+        ]);
 
         await waitForExpect(() => {
             expect(connectionStates).toStrictEqual(['failed', 'connecting', 'connected']);
@@ -102,15 +115,15 @@ describe('AblyUserLogin', () => {
         await waitForExpect(() => {
             expect(publicChannelStates).toStrictEqual(['failed', 'attaching', 'attached']);
         });
+        expect(privateChannel.channel.state).toBe('attached')
 
         expect(echo.connector.ablyAuth.existingToken().clientId).toBe('sacOO7@github.com');
         jest.clearAllMocks();
-
-        // TODO - send and receive messages on channels
     });
 
     test('user logs in and then logs out', async() => {
         let connectionStates : Array<any>= []
+        let privateChannelStates : Array<any>= []
         // Initial clientId is null
         expect(mockAuthServer.clientId).toBeNull();
         await waitForExpect(() => {
@@ -129,11 +142,12 @@ describe('AblyUserLogin', () => {
         // Set server clientId to sacOO7@github.com, so user logs in for next request
         mockAuthServer.clientId = 'sacOO7@github.com'
         const privateChannel = echo.private('test') as AblyPrivateChannel; // Requests new token     
-        const privateChannel1ErrPromise = new Promise((resolve) => privateChannel.error(resolve))
         privateChannel.channel.on(statechange => {
-            console.warn("private channel state change " + JSON.stringify(statechange))
+            privateChannelStates.push(statechange.current)
         })
-        await new Promise((resolve) => privateChannel.subscribed(resolve)); // successful attach
+        const privateChannel1ErrPromise = new Promise((resolve) => privateChannel.error(resolve))
+       
+        await new Promise((resolve) => privateChannel.subscribed(resolve)); // successful attach 
         await waitForExpect(() => {
             expect(connectionStates).toStrictEqual(['failed', 'connecting', 'connected'])
         });
@@ -146,9 +160,13 @@ describe('AblyUserLogin', () => {
         const privateChannel1Err = await privateChannel1ErrPromise as any;
         const privateChannel2Err = await new Promise((resolve) => privateChannel2.error(resolve)) as any;
 
-        expect(privateChannel1Err.message).toContain("Mismatched clientId");
-        expect(privateChannel2Err.message).toContain("Mismatched clientId");
+        const errMsg = 'Mismatched clientId for existing connection'
+        expect(privateChannel1Err.message).toContain(errMsg);
+        expect(privateChannel2Err.message).toContain(errMsg);
 
+        await waitForExpect(() => {
+            expect(privateChannelStates).toStrictEqual(['attaching', 'attached', 'failed']);
+        });
         // Connection transitions to failed state
         await waitForExpect(() => {
             expect(connectionStates).toStrictEqual(['failed', 'connecting', 'connected', 'failed'])
