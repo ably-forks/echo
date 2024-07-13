@@ -15,7 +15,6 @@ describe('AblyPrivateChannel', () => {
         global.Ably = Ably;
         testApp = await setup();
         mockAuthServer = new MockAuthServer(testApp.keys[0].keyStr);
-        mockAuthServer.clientId = 'sacOO7@github.com'
     });
 
     afterAll(async () => {
@@ -40,7 +39,7 @@ describe('AblyPrivateChannel', () => {
     });
 
     test('channel subscription', (done) => {
-        const privateChannel = echo.private('test') as AblyPrivateChannel;
+        const privateChannel = echo.private('test') as AblyChannel;
         privateChannel.subscribed(() => {
             privateChannel.unregisterSubscribed();
             done();
