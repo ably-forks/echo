@@ -119,6 +119,7 @@ export class AblyAuth {
         const connectionFailedCallback = stateChange => {
             if (stateChange.reason.code == 40102) { // 40102 denotes mismatched clientId
                 ablyConnection.off(connectionFailedCallback);
+                console.warn("User login detected, re-connecting again!")
                 this.onClientIdChanged();
             }
         }
@@ -135,10 +136,7 @@ export class AblyAuth {
     onClientIdChanged = () => {
         this.ablyClient().connect();
         for (const ablyChannel of Object.values(this.ablyConnector.channels)) {
-            // Only attach public channels
-            if (ablyChannel instanceof AblyChannel) {
-                ablyChannel.channel.attach(ablyChannel._alertErrorListeners);
-            }
+            ablyChannel.channel.attach(ablyChannel._alertErrorListeners);
         }
     }
 
