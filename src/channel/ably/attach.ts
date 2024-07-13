@@ -7,6 +7,7 @@ let channelAttachAuthorized = false;
  */
 export const beforeChannelAttach = (ablyClient, authorize: Function) => {
     const dummyRealtimeChannel = ablyClient.channels.get('dummy');
+    dummyRealtimeChannel.__proto__.authorizeChannel = authorize;
     if (channelAttachAuthorized) {
         return;
     }
@@ -22,7 +23,7 @@ export const beforeChannelAttach = (ablyClient, authorize: Function) => {
         this.authorizing = true;
         const bindedInternalAttach = internalAttach.bind(this);
 
-        authorize(this, (error) => {
+        this.authorizeChannel(this, (error) => {
             this.authorizing = false;
             if (error) {
                 if (errCallback) {
