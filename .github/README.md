@@ -50,6 +50,7 @@ Once you have uncommented and adjusted the Echo configuration according to your 
 ```shell
 npm run dev
 ```
+- If you are using SPA on client side, on user login, new clientId is assigned to the token. So, connection goes into failed state for next channel attach. We have fixed this issue. Now, it immediately reconnects again, reattaching all existing channels. See [Fix clientId mismatch](https://github.com/ably-forks/laravel-echo/pull/38) for more details. On user logout, connection+channels goes into failed state, and doesn't reconnect again. Hence, you need to create a new Echo instance after user logs out.
 
 ## Working with laravel sanctum/ support channel auth using custom implementation
 - There is an explicit section for [Authorizing Private/Presence Broadcast Channels](https://laravel.com/docs/sanctum#authorizing-private-broadcast-channels).
