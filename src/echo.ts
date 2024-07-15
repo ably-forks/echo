@@ -1,5 +1,5 @@
 import { Channel, PresenceChannel } from './channel';
-import { AblyConnector, PusherConnector, SocketIoConnector, NullConnector } from './connector';
+import { AblyConnector, Connector, PusherConnector, SocketIoConnector, NullConnector } from './connector';
 
 /**
  * This class is the primary API for interacting with broadcasting.
@@ -40,6 +40,8 @@ export default class Echo {
     connect(): void {
         if (this.options.broadcaster == 'ably') {
             this.connector = new AblyConnector(this.options);
+        } else if (this.options.broadcaster == 'reverb') {
+            this.connector = new PusherConnector({ ...this.options, cluster: '' });
         } else if (this.options.broadcaster == 'pusher') {
             this.connector = new PusherConnector(this.options);
         } else if (this.options.broadcaster == 'socket.io') {
@@ -48,6 +50,10 @@ export default class Echo {
             this.connector = new NullConnector(this.options);
         } else if (typeof this.options.broadcaster == 'function') {
             this.connector = new this.options.broadcaster(this.options);
+        } else {
+            throw new Error(
+                `Broadcaster ${typeof this.options.broadcaster} ${this.options.broadcaster} is not supported.`
+            );
         }
     }
 
@@ -190,4 +196,6 @@ export default class Echo {
 /**
  * Export channel classes for TypeScript.
  */
-export { Channel, PresenceChannel };
+export { Connector, Channel, PresenceChannel };
+
+export { EventFormatter } from './util';

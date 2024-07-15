@@ -1,6 +1,24 @@
 # Release Notes
 
-## [Unreleased](https://github.com/laravel/echo/compare/v1.15.1...master)
+## [Unreleased](https://github.com/laravel/echo/compare/v1.16.1...master)
+
+## [v1.16.1](https://github.com/laravel/echo/compare/v1.16.0...v1.16.1) - 2024-04-09
+
+* Replaced deprecated substr function by [@SuperDJ](https://github.com/SuperDJ) in https://github.com/laravel/echo/pull/395
+* Throw error on unsupported broadcaster by [@SuperDJ](https://github.com/SuperDJ) in https://github.com/laravel/echo/pull/396
+
+## [v1.16.0](https://github.com/laravel/echo/compare/v1.15.3...v1.16.0) - 2024-02-20
+
+* Adds support for Reverb as an Echo broadcaster by [@joedixon](https://github.com/joedixon) in https://github.com/laravel/echo/pull/391
+
+## [v1.15.3](https://github.com/laravel/echo/compare/v1.15.2...v1.15.3) - 2023-08-29
+
+- Export `Connector` and `EventFormatter` to provide full extensibility by [@slavarazum](https://github.com/slavarazum) in https://github.com/laravel/echo/pull/383
+
+## [v1.15.2](https://github.com/laravel/echo/compare/v1.15.1...v1.15.2) - 2023-07-11
+
+- Fix broken Typescript presence channel interface "whisper" method by [@DellanX](https://github.com/DellanX) in https://github.com/laravel/echo/pull/377
+- Fix TS error in EventFormatter for projects using TS5 by [@SanderMuller](https://github.com/SanderMuller) in https://github.com/laravel/echo/pull/381
 
 ## [v1.15.1](https://github.com/laravel/echo/compare/v1.15.0...v1.15.1) - 2023-04-26
 

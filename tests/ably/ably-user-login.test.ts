@@ -5,7 +5,7 @@ import { AblyChannel, AblyPrivateChannel } from '../../src/channel';
 import * as Ably from 'ably';
 import waitForExpect from 'wait-for-expect';
 
-jest.setTimeout(20000);
+jest.setTimeout(30000);
 describe('AblyUserLogin', () => {
     let testApp: any;
     let mockAuthServer: MockAuthServer;
