@@ -2,6 +2,10 @@ import Echo from '../src/echo';
 
 describe('Echo', () => {
     test('it will not throw error for supported driver', () => {
+        expect(() => new Echo({ broadcaster: 'ably' })).not.toThrowError(
+            'Broadcaster string ably is not supported.'
+        );
+
         expect(() => new Echo({ broadcaster: 'reverb' })).not.toThrowError(
             'Broadcaster string reverb is not supported.'
         );
