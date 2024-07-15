@@ -1,7 +1,7 @@
 import { Connector } from './connector';
 
 import { AblyChannel, AblyPrivateChannel, AblyPresenceChannel, AblyAuth } from './../channel';
-import { AblyRealtime } from '../../typings/ably';
+import { AblyRealtime, TokenDetails } from '../../typings/ably';
 
 /**
  * This class creates a connector to Ably.
@@ -35,13 +35,14 @@ export class AblyConnector extends Connector {
         if (typeof this.options.client !== 'undefined') {
             this.ably = this.options.client;
         } else {
-            this.ablyAuth = new AblyAuth(this.options);
+            this.ablyAuth = new AblyAuth(this, this.options);
             if (!this.options.agents) {
                 this.options.agents = {};
             }
             this.options.agents['laravel-echo'] = AblyConnector.LIB_VERSION;
             this.ably = new Ably.Realtime({ ...this.ablyAuth.options, ...this.options });
-            this.ablyAuth.enableAuthorizeBeforeChannelAttach(this);
+            this.ablyAuth.enableAuthorizeBeforeChannelAttach();
+            this.ablyAuth.allowReconnectOnUserLogin()
         }
     }
 
