@@ -1,5 +1,17 @@
 # Changelog
 
+## [v1.0.5](https://github.com/ably-forks/laravel-echo/tree/ably-echo-1.0.5)
+
+[Full Changelog](https://github.com/ably-forks/laravel-echo/compare/ably-echo-1.0.4...ably-echo-1.0.5)
+
+**Closed issues:**
+
+- 401 Error on Subsequent Private/Public Channel Subscriptions [\#36](https://github.com/ably-forks/laravel-echo/issues/36)
+
+**Merged pull requests:**
+
+- Fix clientId mismatch on login [\#38](https://github.com/ably-forks/laravel-echo/pull/38) ([sacOO7](https://github.com/sacOO7))
+
 ## [v1.0.4](https://github.com/ably-forks/laravel-echo/tree/ably-echo-1.0.4)
 
 [Full Changelog](https://github.com/ably-forks/laravel-echo/compare/ably-echo-1.0.3...ably-echo-1.0.4)
