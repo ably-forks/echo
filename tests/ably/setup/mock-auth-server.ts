@@ -8,7 +8,7 @@ export class MockAuthServer {
     keyName: string;
     keySecret: string;
     ablyClient: Ably.Rest;
-    clientId = 'sacOO7@github.com';
+    clientId: string | null = 'sacOO7@github.com';
     userInfo = { id: 'sacOO7@github.com', name: 'sacOO7' };
 
     shortLived: channels;
