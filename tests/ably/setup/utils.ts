@@ -1,4 +1,5 @@
-import { httpRequestAsync } from '../../../src/channel/ably/utils';
+import { httpRequestAsync} from '../../../src/channel/ably/utils';
+export { toBase64 } from '../../../src/channel/ably/utils';
 
 const safeAssert = (assertions: Function, done: Function, finalAssertion = false) => {
     try {
@@ -16,8 +17,6 @@ export const execute = (fn: Function, times: number) => {
         fn();
     }
 };
-
-export const toBase64 = (text: string) => Buffer.from(text, 'binary').toString('base64');
 
 export const httpPostAsync = async (url: string, postData: any) => {
     postData = JSON.stringify(postData);
