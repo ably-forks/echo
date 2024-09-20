@@ -33,11 +33,18 @@ export const toTokenDetails = (jwtToken: string): TokenDetails | any => {
 
 const isBrowser = typeof window === 'object';
 
-const toText = (base64: string) => {
+export const toText = (base64: string) => {
     if (isBrowser) {
         return atob(base64);
     }
     return Buffer.from(base64, 'base64').toString('binary');
+};
+
+export const toBase64 = (text: string) => {
+    if (isBrowser) {
+        return btoa(text);
+    }
+    return Buffer.from(text, 'binary').toString('base64');
 };
 
 const isAbsoluteUrl = (url: string) => (url && url.indexOf('http://') === 0) || url.indexOf('https://') === 0;
