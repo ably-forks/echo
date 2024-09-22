@@ -123,8 +123,8 @@ export class AblyConnector extends Connector {
      */
     socketId(): string {
         let socketIdObject = {
-            connectioKey : this.ably.connection.key,
-            clientId : this.ably.auth.clientId,
+            connectionKey : this.ably.connection.key,
+            clientId : this.ably.auth.clientId ?? null,
         }
         return toBase64(JSON.stringify(socketIdObject));
     }
