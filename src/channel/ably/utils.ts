@@ -33,18 +33,37 @@ export const toTokenDetails = (jwtToken: string): TokenDetails | any => {
 
 const isBrowser = typeof window === 'object';
 
+/**
+ * Helper method to decode base64 url encoded string
+ * https://stackoverflow.com/a/78178053
+ * @param base64 base64 url encoded string
+ * @returns decoded text string
+ */
 export const toText = (base64: string) => {
+    const base64Encoded = base64.replace(/-/g, '+').replace(/_/g, '/');
+    const padding = base64.length % 4 === 0 ? '' : '='.repeat(4 - (base64.length % 4));
+    const base64WithPadding = base64Encoded + padding;
+
     if (isBrowser) {
-        return atob(base64);
+        return atob(base64WithPadding);
     }
-    return Buffer.from(base64, 'base64').toString('binary');
+    return Buffer.from(base64WithPadding, 'base64').toString('binary');
 };
 
+/**
+ * Helper method to encode text into base64 url encoded string
+ * https://stackoverflow.com/a/78178053
+ * @param base64 text
+ * @returns base64 url encoded string
+ */
 export const toBase64 = (text: string) => {
+    let encoded = ''
     if (isBrowser) {
-        return btoa(text);
+        encoded = btoa(text);
+    } else {
+        encoded = Buffer.from(text, 'binary').toString('base64');
     }
-    return Buffer.from(text, 'binary').toString('base64');
+    return encoded.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 };
 
 const isAbsoluteUrl = (url: string) => (url && url.indexOf('http://') === 0) || url.indexOf('https://') === 0;

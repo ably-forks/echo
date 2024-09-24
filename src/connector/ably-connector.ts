@@ -119,7 +119,7 @@ export class AblyConnector extends Connector {
 
     /**
      * Get the socket ID for the connection.
-     * For ably, returns base64 encoded json with keys {connectionKey, clientId}
+     * For ably, returns base64 url encoded json with keys {connectionKey, clientId}
      */
     socketId(): string {
         let socketIdObject = {
