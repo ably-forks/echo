@@ -12,11 +12,11 @@ export const parseJwt = (jwtToken: string): { header: any; payload: any } => {
     // Get Token Header
     const base64HeaderUrl = jwtToken.split('.')[0];
     const base64Header = base64HeaderUrl.replace('-', '+').replace('_', '/');
-    const header = JSON.parse(toText(base64Header));
+    const header = JSON.parse(fromBase64UrlEncoded(base64Header));
     // Get Token payload
     const base64Url = jwtToken.split('.')[1];
     const base64 = base64Url.replace('-', '+').replace('_', '/');
-    const payload = JSON.parse(toText(base64));
+    const payload = JSON.parse(fromBase64UrlEncoded(base64));
     return { header, payload };
 };
 
@@ -39,7 +39,7 @@ const isBrowser = typeof window === 'object';
  * @param base64 base64 url encoded string
  * @returns decoded text string
  */
-export const toText = (base64: string) => {
+export const fromBase64UrlEncoded = (base64: string) => {
     const base64Encoded = base64.replace(/-/g, '+').replace(/_/g, '/');
     const padding = base64.length % 4 === 0 ? '' : '='.repeat(4 - (base64.length % 4));
     const base64WithPadding = base64Encoded + padding;
@@ -56,7 +56,7 @@ export const toText = (base64: string) => {
  * @param base64 text
  * @returns base64 url encoded string
  */
-export const toBase64 = (text: string) => {
+export const toBase64UrlEncoded = (text: string) => {
     let encoded = ''
     if (isBrowser) {
         encoded = btoa(text);

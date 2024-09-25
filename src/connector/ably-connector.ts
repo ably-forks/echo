@@ -2,7 +2,7 @@ import { Connector } from './connector';
 
 import { AblyChannel, AblyPrivateChannel, AblyPresenceChannel, AblyAuth } from './../channel';
 import { AblyRealtime, TokenDetails } from '../../typings/ably';
-import { toBase64 } from '../channel/ably/utils';
+import { toBase64UrlEncoded } from '../channel/ably/utils';
 
 /**
  * This class creates a connector to Ably.
@@ -126,7 +126,7 @@ export class AblyConnector extends Connector {
             connectionKey : this.ably.connection.key,
             clientId : this.ably.auth.clientId ?? null,
         }
-        return toBase64(JSON.stringify(socketIdObject));
+        return toBase64UrlEncoded(JSON.stringify(socketIdObject));
     }
 
     /**
