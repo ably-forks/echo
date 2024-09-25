@@ -4,7 +4,7 @@ import { MockAuthServer } from './setup/mock-auth-server';
 import { AblyChannel, AblyPrivateChannel } from '../../src/channel';
 import * as Ably from 'ably';
 import waitForExpect from 'wait-for-expect';
-import { toText } from '../../src/channel/ably/utils';
+import { fromBase64UrlEncoded } from '../../src/channel/ably/utils';
 
 jest.setTimeout(30000);
 describe('AblyUserRestPublishing', () => {
@@ -78,7 +78,7 @@ describe('AblyUserRestPublishing', () => {
     test('Guest user return socketId as base64 encoded connectionkey and null clientId', async () => {
         await getGuestUserChannel("dummyChannel");
         const guestUser = echoInstanes[0];
-        const socketIdObj = JSON.parse(toText(guestUser.socketId()));
+        const socketIdObj = JSON.parse(fromBase64UrlEncoded(guestUser.socketId()));
 
         const expectedConnectionKey = guestUser.connector.ably.connection.key;
 
@@ -123,7 +123,7 @@ describe('AblyUserRestPublishing', () => {
     test('Logged in user return socketId as base64 encoded connectionkey and clientId', async () => {
         await getLoggedInUserChannel("dummyChannel");
         const loggedInUser = echoInstanes[0];
-        const socketIdObj = JSON.parse(toText(loggedInUser.socketId()));
+        const socketIdObj = JSON.parse(fromBase64UrlEncoded(loggedInUser.socketId()));
 
         const expectedConnectionKey = loggedInUser.connector.ably.connection.key;
 

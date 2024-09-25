@@ -1,5 +1,5 @@
 import { httpRequestAsync} from '../../../src/channel/ably/utils';
-export { toBase64 } from '../../../src/channel/ably/utils';
+export { toBase64UrlEncoded } from '../../../src/channel/ably/utils';
 
 const safeAssert = (assertions: Function, done: Function, finalAssertion = false) => {
     try {

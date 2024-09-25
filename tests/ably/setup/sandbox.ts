@@ -1,4 +1,4 @@
-import { httpDeleteAsync, httpPostAsync, toBase64 } from './utils';
+import { httpDeleteAsync, httpPostAsync, toBase64UrlEncoded } from './utils';
 
 let sandboxUrl = 'https://sandbox-rest.ably.io/apps';
 
@@ -16,7 +16,7 @@ const creatNewApp = async () => {
 
 const deleteApp = async (app) => {
     let authKey = app.keys[0].keyStr;
-    const headers = { Authorization: 'Basic ' + toBase64(authKey) };
+    const headers = { Authorization: 'Basic ' + toBase64UrlEncoded(authKey) };
     return await httpDeleteAsync(`${sandboxUrl}/${app.appId}`, headers);
 };
 

@@ -1,4 +1,4 @@
-import { isNullOrUndefinedOrEmpty, parseJwt, toBase64, toText } from '../../../src/channel/ably/utils';
+import { isNullOrUndefinedOrEmpty, parseJwt, fromBase64UrlEncoded } from '../../../src/channel/ably/utils';
 import * as Ably from 'ably/promises';
 import * as jwt from 'jsonwebtoken';
 
@@ -40,7 +40,7 @@ export class MockAuthServer {
     broadcastToOthers = async (socketId: string, {channelName, eventName, payload}) => {
         let protoMsg = {name: eventName, data: payload};
         if (!isNullOrUndefinedOrEmpty(socketId)) {
-            const socketIdObj = JSON.parse(toText(socketId));
+            const socketIdObj = JSON.parse(fromBase64UrlEncoded(socketId));
             protoMsg = {...protoMsg, ...socketIdObj}
         }
         await this.ablyClient.channels.get(channelName).publish(protoMsg);
