@@ -1,18 +1,24 @@
-import { isNullOrUndefinedOrEmpty, parseJwt } from '../../../src/channel/ably/utils';
+import { isNullOrUndefinedOrEmpty, parseJwt, fromBase64UrlEncoded } from '../../../src/channel/ably/utils';
 import * as Ably from 'ably/promises';
 import * as jwt from 'jsonwebtoken';
 
 type channels = Array<string>;
 
+/**
+ * MockAuthServer mimicks {@link https://github.com/ably/laravel-broadcaster/blob/main/src/AblyBroadcaster.php AblyBroadcaster.php}.
+ * Aim is to keep implementation and behaviour in sync with AblyBroadcaster.php, so that it can be tested
+ * without running actual PHP server.
+ */
 export class MockAuthServer {
     keyName: string;
     keySecret: string;
     ablyClient: Ably.Rest;
     clientId: string | null = 'sacOO7@github.com';
-    userInfo = { id: 'sacOO7@github.com', name: 'sacOO7' };
 
     shortLived: channels;
     banned: channels;
+
+    userInfo = { id: 'sacOO7@github.com', name: 'sacOO7' }; // Used for presence
 
     constructor(apiKey: string, environment = 'sandbox') {
         const keys = apiKey.split(':');
@@ -21,8 +27,23 @@ export class MockAuthServer {
         this.ablyClient = new Ably.Rest({ key: apiKey, environment });
     }
 
+    /**
+     * Broadcast to all clients subscribed to given channel.
+     */
     broadcast = async (channelName: string, eventName: string, message: string) => {
-        await this.ablyClient.channels.get(channelName).publish(eventName, message);
+        await this.broadcastToOthers("", {channelName, eventName, payload: message});
+    };
+
+    /**
+     * Broadcast on behalf of a given realtime client.
+     */
+    broadcastToOthers = async (socketId: string, {channelName, eventName, payload}) => {
+        let protoMsg = {name: eventName, data: payload};
+        if (!isNullOrUndefinedOrEmpty(socketId)) {
+            const socketIdObj = JSON.parse(fromBase64UrlEncoded(socketId));
+            protoMsg = {...protoMsg, ...socketIdObj}
+        }
+        await this.ablyClient.channels.get(channelName).publish(protoMsg);
     };
 
     tokenInvalidOrExpired = (serverTime, token) => {

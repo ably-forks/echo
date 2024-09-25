@@ -39,7 +39,7 @@ describe('AblyUserLogin', () => {
         });
     });
 
-    test('user logs in without previous (guest) channels', async () => {
+    test('user logs in without previous (public) channels', async () => {
         let connectionStates : Array<any>= []
         // Initial clientId is null
         expect(mockAuthServer.clientId).toBeNull();
@@ -70,7 +70,7 @@ describe('AblyUserLogin', () => {
         expect(echo.connector.ablyAuth.existingToken().clientId).toBe('sacOO7@github.com');
     });
 
-    test('user logs in with previous (guest) channels', async () => {
+    test('user logs in with previous (public) channels', async () => {
         let connectionStates : Array<any>= []
         let publicChannelStates : Array<any>= []
 

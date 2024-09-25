@@ -117,6 +117,7 @@ export default class Echo {
 
     /**
      * Get the Socket ID for the connection.
+     * For ably, returns base64 url encoded json with keys {connectionKey, clientId}
      */
     socketId(): string {
         return this.connector.socketId();
