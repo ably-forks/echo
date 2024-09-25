@@ -30,6 +30,11 @@ describe('Utils', () => {
             expect(tokenDetails.issued).toBe(1654634212000);
             expect(tokenDetails.token).toBe(token);
         });
+
+        test('should throw error for invalid JWT', () => {
+            const invalidToken = 'invalid.token.string';
+            expect(() => parseJwt(invalidToken)).toThrow('Unexpected token');
+        });
     });
 
     describe('Base64 URL encoding/decoding', () => {
@@ -41,7 +46,9 @@ describe('Utils', () => {
             // edge cases
             expect(toBase64UrlEncoded('')).toBe('');
             expect(toBase64UrlEncoded('Hello, 世界! 🌍')).toBe('SGVsbG8sIOS4lueVjCEg8J-MjQ');
+            expect(toBase64UrlEncoded('Hello+World/123')).toBe('SGVsbG8rV29ybGQvMTIz');
             expect(toBase64UrlEncoded('a')).toBe('YQ');  // Would be 'YQ==' in standard Base64
+            expect(toBase64UrlEncoded('\x8EÇdwïìvÇ')).toBe('wo7Dh2R3w6_DrHbDhw');
         });
 
         test('should decode Base64UrlEncoded string into text', () => {
@@ -52,7 +59,9 @@ describe('Utils', () => {
             // edge cases 
             expect(fromBase64UrlEncoded('')).toBe('');
             expect(fromBase64UrlEncoded('SGVsbG8sIOS4lueVjCEg8J-MjQ')).toBe('Hello, 世界! 🌍');
+            expect(fromBase64UrlEncoded('SGVsbG8rV29ybGQvMTIz')).toBe('Hello+World/123');
             expect(fromBase64UrlEncoded('YQ')).toBe('a');  // No padding in Base64Url
+            expect(fromBase64UrlEncoded('wo7Dh2R3w6_DrHbDhw')).toBe('\x8EÇdwïìvÇ');
         });
     });
 });
