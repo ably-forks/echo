@@ -10,7 +10,7 @@ jest.setTimeout(30000);
 describe('AblyUserRestPublishing', () => {
     let testApp: any;
     let mockAuthServer: MockAuthServer;
-    let echoInstanes: Array<Echo>;
+    let echoInstances: Array<Echo>;
 
     beforeAll(async () => {
         global.Ably = Ably;
@@ -23,14 +23,14 @@ describe('AblyUserRestPublishing', () => {
     });
 
     beforeEach(() => {
-        echoInstanes = [];
+        echoInstances = [];
     })
 
     afterEach((done) => {
-        let promises: Array<Promise<Boolean>> = []
-        for (const echo of echoInstanes) {
+        let promises: Array<Promise<boolean>> = []
+        for (const echo of echoInstances) {
             echo.disconnect();
-            const promise = new Promise<Boolean>(res => {
+            const promise = new Promise<boolean>(res => {
                 echo.connector.ably.connection.once('closed', () => {
                     res(true);
                 });
@@ -50,7 +50,7 @@ describe('AblyUserRestPublishing', () => {
             environment: 'sandbox',
             requestTokenFn: mockAuthServer.getSignedToken
         });
-        echoInstanes.push(guestUser);
+        echoInstances.push(guestUser);
         const publicChannel = guestUser.channel(channelName) as AblyChannel;
         await new Promise((resolve) => publicChannel.subscribed(resolve));
         expect(guestUser.connector.ably.auth.clientId).toBeFalsy();
@@ -66,7 +66,7 @@ describe('AblyUserRestPublishing', () => {
             environment: 'sandbox',
             requestTokenFn: mockAuthServer.getSignedToken
         });
-        echoInstanes.push(loggedInUser);
+        echoInstances.push(loggedInUser);
         const privateChannel = loggedInUser.private(channelName) as AblyPrivateChannel;
         await new Promise((resolve) => privateChannel.subscribed(resolve));
         expect(loggedInUser.connector.ably.auth.clientId).toBe("sacOO7@github.com");
@@ -77,7 +77,7 @@ describe('AblyUserRestPublishing', () => {
 
     test('Guest user return socketId as base64 encoded connectionkey and null clientId', async () => {
         await getGuestUserChannel("dummyChannel");
-        const guestUser = echoInstanes[0];
+        const guestUser = echoInstances[0];
         const socketIdObj = JSON.parse(fromBase64UrlEncoded(guestUser.socketId()));
 
         const expectedConnectionKey = guestUser.connector.ably.connection.key;
@@ -111,7 +111,7 @@ describe('AblyUserRestPublishing', () => {
 
         // Publish message to other client
         messagesReceived = []
-        const firstClientSocketId = echoInstanes[0].socketId();
+        const firstClientSocketId = echoInstances[0].socketId();
         await mockAuthServer.broadcastToOthers(firstClientSocketId,
             { channelName: `public:${channelName}`, eventName: "toOthers", payload: "data" })
         await waitForExpect(() => {
@@ -122,7 +122,7 @@ describe('AblyUserRestPublishing', () => {
 
     test('Logged in user return socketId as base64 encoded connectionkey and clientId', async () => {
         await getLoggedInUserChannel("dummyChannel");
-        const loggedInUser = echoInstanes[0];
+        const loggedInUser = echoInstances[0];
         const socketIdObj = JSON.parse(fromBase64UrlEncoded(loggedInUser.socketId()));
 
         const expectedConnectionKey = loggedInUser.connector.ably.connection.key;
@@ -156,7 +156,7 @@ describe('AblyUserRestPublishing', () => {
 
         // Publish message to other client
         messagesReceived = []
-        const firstClientSocketId = echoInstanes[0].socketId();
+        const firstClientSocketId = echoInstances[0].socketId();
         await mockAuthServer.broadcastToOthers(firstClientSocketId,
             { channelName: `private:${channelName}`, eventName: "toOthers", payload: "data" });
         await waitForExpect(() => {
