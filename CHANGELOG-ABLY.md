@@ -1,5 +1,14 @@
 # Changelog
 
+## [v1.0.6](https://github.com/ably-forks/laravel-echo/tree/ably-echo-1.0.6)
+
+[Full Changelog](https://github.com/ably-forks/laravel-echo/compare/ably-echo-1.0.5...ably-echo-1.0.6)
+
+**Merged pull requests:**
+
+- \[ECO-4995\] Fix base64 url encoding/decoding [\#43](https://github.com/ably-forks/laravel-echo/pull/43) ([sacOO7](https://github.com/sacOO7))
+- \[ECO-4977\] Fix broadcast to others [\#42](https://github.com/ably-forks/laravel-echo/pull/42) ([sacOO7](https://github.com/sacOO7))
+
 ## [v1.0.5](https://github.com/ably-forks/laravel-echo/tree/ably-echo-1.0.5)
 
 [Full Changelog](https://github.com/ably-forks/laravel-echo/compare/ably-echo-1.0.4...ably-echo-1.0.5)
