@@ -1,4 +1,4 @@
-import { parseJwt, toTokenDetails } from '../../src/channel/ably/utils';
+import { fromBase64UrlEncoded, parseJwt, toBase64UrlEncoded, toTokenDetails } from '../../src/channel/ably/utils';
 
 describe('Utils', () => {
     test('should parse JWT properly', () => {
@@ -29,4 +29,17 @@ describe('Utils', () => {
         expect(tokenDetails.issued).toBe(1654634212000);
         expect(tokenDetails.token).toBe(token);
     });
+
+    test('should encode text into Base64UrlEncoded string', () => {
+        const normalText = "laravel-echo codebase is of best quality, period!"
+        const encodedText = toBase64UrlEncoded(normalText);
+        expect(encodedText).toBe('bGFyYXZlbC1lY2hvIGNvZGViYXNlIGlzIG9mIGJlc3QgcXVhbGl0eSwgcGVyaW9kIQ')
+    });
+
+    test('should decode Base64UrlEncoded string into text', () => {
+        const normalText = "bGFyYXZlbC1lY2hvIGNvZGViYXNlIGlzIG9mIGJlc3QgcXVhbGl0eSwgcGVyaW9kIQ"
+        const encodedText = fromBase64UrlEncoded(normalText);
+        expect(encodedText).toBe('laravel-echo codebase is of best quality, period!')
+    });
+
 });

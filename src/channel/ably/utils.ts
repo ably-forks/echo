@@ -39,7 +39,7 @@ const isBrowser = typeof window === 'object';
  * @param base64 base64 url encoded string
  * @returns decoded text string
  */
-export const fromBase64UrlEncoded = (base64: string) => {
+export const fromBase64UrlEncoded = (base64: string): string => {
     const base64Encoded = base64.replace(/-/g, '+').replace(/_/g, '/');
     const padding = base64.length % 4 === 0 ? '' : '='.repeat(4 - (base64.length % 4));
     const base64WithPadding = base64Encoded + padding;
@@ -47,7 +47,7 @@ export const fromBase64UrlEncoded = (base64: string) => {
     if (isBrowser) {
         return atob(base64WithPadding);
     }
-    return Buffer.from(base64WithPadding, 'base64').toString('binary');
+    return Buffer.from(base64WithPadding, 'base64').toString();
 };
 
 /**
@@ -56,12 +56,12 @@ export const fromBase64UrlEncoded = (base64: string) => {
  * @param base64 text
  * @returns base64 url encoded string
  */
-export const toBase64UrlEncoded = (text: string) => {
+export const toBase64UrlEncoded = (text: string): string => {
     let encoded = ''
     if (isBrowser) {
         encoded = btoa(text);
     } else {
-        encoded = Buffer.from(text, 'binary').toString('base64');
+        encoded = Buffer.from(text).toString('base64');
     }
     return encoded.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 };
