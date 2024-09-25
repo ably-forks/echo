@@ -12,7 +12,7 @@ export class AblyConnector extends Connector {
     /**
      * The laravel-echo library version.
      */
-    static LIB_VERSION = '1.0.5';
+    static LIB_VERSION = '1.0.6';
     
     /**
      * The Ably instance.
